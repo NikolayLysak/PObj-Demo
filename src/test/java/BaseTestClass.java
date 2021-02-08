@@ -1,7 +1,10 @@
+import atlas.BaseSite;
+import io.qameta.atlas.core.Atlas;
+import io.qameta.atlas.webdriver.WebDriverConfiguration;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import tools.InitDriver;
+import tools.PageManager;
 
 import static tools.InitDriver.closeDriver;
 import static tools.InitDriver.getDriver;
@@ -9,15 +12,31 @@ import static tools.InitDriver.getDriver;
 public abstract class BaseTestClass {
 
     protected WebDriver driver = getDriver();
+    static final String BASE_URL = "https://github.com/";
 
-    @BeforeClass(enabled = true)
-    public void start() {
-        System.out.println("This BEFORE CLASS BLOCK");
-        driver.get("https://toyota.kharkov.ua/");
+    Atlas atlas = new Atlas(new WebDriverConfiguration(driver, BASE_URL));
+
+
+    private final ThreadLocal<BaseSite> instance = new ThreadLocal<>();
+
+    public BaseSite onSite() {
+        if (instance.get() == null) {
+            instance.set(atlas.create(driver, BaseSite.class));
+        }
+        return instance.get();
     }
 
-    @AfterClass(enabled = true)
-    public void end() {
+
+    @BeforeClass(enabled = false)
+    public void setUp() {
+
+        System.out.println("This BEFORE CLASS BLOCK");
+        System.out.println("Atlas initiation");
+    }
+
+    @AfterClass()
+    public void tearDown() {
         closeDriver();
     }
 }
+

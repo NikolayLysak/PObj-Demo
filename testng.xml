@@ -5,7 +5,8 @@
        <classes>
            <class name="Test1">
                <methods>
-                   <include name="test_1"/>
+                   <exclude name="test_page_objects"/>
+                   <include name="test_atlas"/>
                </methods>
            </class>
        </classes>
